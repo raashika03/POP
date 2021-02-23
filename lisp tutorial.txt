@@ -1,0 +1,2 @@
+https://www.tutorialspoint.com/lisp/index.htm
+https://dl.acm.org/doi/pdf/10.1145/359576.359579
