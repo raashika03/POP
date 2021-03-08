@@ -1,0 +1,104 @@
+Rashika rathi (B18081), Kalyani Kumari (b18063)
+
+Q1.
+> (/(+ 5 4 (- 2 (- 3 (+ 6 (/ 4 5))))) (* 3 (- 6 2) (- 2 7)))
+-37/150
+
+
+
+
+
+
+Q2.
+> (define (leastTwo a b c) (-(+ a b c)
+                        (cond ((and (>= a b)(>= a c)) a)
+                              ((and (>= b a)(>= b c)) b)
+                              ((and (>= c a) (>= c b)) c)
+                              )))
+> (leastTwo 3 1 2)
+3
+> (leastTwo 8 8 3)
+11
+
+
+
+
+
+
+
+Q3.
+> (define (modulo a b)
+    (- a (* b (floor (/ a b)))))
+(define (modexp x y n) (modulo(expt x y)n))
+> (modexp 2 4 5) 
+1                                                               1
+> (modexp 2 3 2)
+0
+
+
+
+
+
+Q4.
+Isaac Newton was the one who invented perhaps the largest no. of things.
+
+
+For Square-root
+
+
+(define (good-enough? guess x)
+(< (abs (- (* guess guess) x)) 0.00000000001))
+
+(define (sqrt-iter guess x)
+(if (good-enough? (improve guess x) x)
+guess
+(sqrt-iter (improve guess x) x)))
+
+(define (improve guess x)
+(/ (+ guess (/ x guess) )2))
+
+(define (sqrt x)
+(sqrt-iter 1.0 x))
+
+
+
+For cube-root
+
+
+(define (good-enough? previous-guess guess)
+  (< (abs (/ (- guess previous-guess) guess)) 0.00000000001))
+
+(define (cube-root-iter guess x)
+  (if (good-enough? (improve guess x) guess)
+      guess
+      (cube-root-iter (improve guess x) x)))
+
+(define (improve guess x)
+  (/ (+ (/ x (* guess guess)) (* 2 guess)) 3))
+
+(define (cube-root x)
+  (cube-root-iter 1.0 x))
+
+
+
+
+
+
+Q5.
+Exercise 1.5: Ben Bitdiddle has invented a test to determine
+whether the interpreter he is faced with is using applicative-order evaluation or normal-order evaluation. He defines the
+following two procedures:
+(define (p) (p))
+(define (test x y)
+(if (= x 0) 0 y))
+then he evaluates the expression
+(test 0 (p))
+What behavior will Ben observe with an interpreter that
+uses applicative-order evaluation? What behavior will he
+observe with an interpreter that uses normal-order evaluation? Explain your answer. 
+
+Ans-
+An interpreter that uses applicative-order evaluation follows "evaluate the arguments and then apply" while the one which uses normal-order evaluation follows "fully expand and then reduce".
+In this question, the procedure 'p' calls itself repeatedly resulting in an infinite loop, if value of 'p' is computed.
+So, in applicative-order evaluation, when (test 0 (p)) is evaluated, the interpreter will start by evaluating each arguments, so it'll start with evaluating '0', then '(p)', and then procedure test will be used on the computed arguments. So, '0' will compute to '0', and then when '(p)' is evaluated it calls itself, resulting in an infinte loop. So, it'll not give any result.
+In normal-order evaluation, the interpreter will not compute the operands values unless they're required. So, in this case for evaluating (test 0 (p)), the interpreter will move into the body of the 'test' procedure (if(= 0 0)0 (p)), and since the predicate (= 0 0) results to #t (i.e.,true) in the if statement execution so '0' will be returned and (p) will not be evaluated.
