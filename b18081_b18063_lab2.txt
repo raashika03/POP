@@ -1,0 +1,74 @@
+1.
+(define (succ x) (lambda () x))
+(define (pred x) (x))
+(define zero (lambda () '()))
+(define one (succ zero))
+(define (is-zero? x) (null? (x)))
+(is-zero? one)
+(is-zero? zero)
+
+2.
+(define (succ x) (lambda () x))
+(define (pred x) (x))
+(define zero (lambda () '()))
+(define one (succ zero))
+(define two (succ one))
+(define three (succ two))
+(define four (succ three))
+(define (is-equal? x y)
+(cond ((is-zero? x) (is-zero? y))
+((is-zero? y) (is-zero? x))
+(else (is-equal? (pred x) (pred y)))))
+(define y (succ (succ (succ (succ zero)))))
+(is-equal? four y)
+
+3.
+(define zero (lambda () '()))
+(define one (succ zero))
+(define two (succ one))
+(define (succ x) (lambda () x))
+(define (pred x) (x))
+(define (presuc x) (pred (succ x)))
+(is-equal? two (presuc two))
+
+
+
+
+Subtract-church
+
+(define zero (lambda () '()))
+(define one (succ zero))
+(define two (succ one))
+(define three (succ two))
+(define four (succ three))
+(define five (succ four))
+(define (subtract-church x y)
+(if (is-zero? y)
+x
+(subtract-church (pred x) (pred y))))
+(is-equal? two (subtract-church five three))
+
+
+
+
+
+
+
+
+multiply-church
+
+(define (add-church x y)
+(if (is-zero? y)
+x
+(add-church (succ x) (pred y))))
+(define zero (lambda () '()))
+(define one (succ zero))
+(define two (succ one))
+(define three (succ two))
+(define four (succ three))
+(define five (succ four))
+ (define (multiply-church x y)
+  (if (is-zero? y)
+      zero
+      (add-church x (multiply-church x (pred y)))))
+(is-equal? four (multiply-church two two))
