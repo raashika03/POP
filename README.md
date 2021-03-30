@@ -1,3 +1,3 @@
 # POP
-Paradigm of Programming
+Paradigm of Programming \
 CS302 content
