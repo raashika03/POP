@@ -1,0 +1,89 @@
+Ques1
+
+(define (make-account balance password)
+  (define (withdraw amount)
+    (if (>= balance amount)
+        (begin (set! balance (- balance amount))
+               balance)
+        "Insufficient funds"))
+  (define (deposit amount)
+    (set! balance (+ balance amount))
+    balance)
+  (define (dispatch p m)
+   (if (not (eq? p password))
+    (lambda args "Incorrect password")
+      (cond ((eq? m 'withdraw) withdraw)
+            ((eq? m 'deposit) deposit)
+            (else (error "Unknown request -- MAKE-ACCOUNT"
+                         m)))))
+  dispatch)
+
+(define acc (make-account 100 'rashika))
+((acc 'sadsf 'withdraw) 40 )
+"Incorrect password"
+
+
+Ques2
+
+ (define (make-account balance password)
+  (let ((counter 0))
+    (define (withdraw amount)
+      (if (>= balance amount)
+          (begin (set! balance (- balance amount))
+                 balance)
+          "Insufficient funds"))
+    (define (deposit amount)
+      (set! balance (+ amount balance))
+      balance)
+    (define (call-the-cops)
+      (display "Call the cops!"))
+    (define (dispatch pwd m)
+      (if (eq? password pwd)
+          (begin (set! counter 0)
+                 (cond ((eq? m 'withdraw) withdraw)
+                       ((eq? m 'deposit) deposit)
+                       (else (error "Unknown request -- MAKE-ACCOUNT" m))))
+          (begin
+            (if (< counter 5)
+                (set! counter (+ counter 1))
+                (call-the-cops))
+            (lambda (amount) "Incorrect password"))))
+    dispatch))
+
+(define acc (make-account 100 'rashika))
+> ((acc 'sadsf 'withdraw) 40 )
+"Incorrect password"
+> ((acc 'sadsf 'withdraw) 40 )
+"Incorrect password"
+> ((acc 'sadsf 'withdraw) 40 )
+"Incorrect password"
+> ((acc 'sadsf 'withdraw) 40 )
+"Incorrect password"
+> ((acc 'sadsf 'withdraw) 40 )
+"Incorrect password"
+> ((acc 'sadsf 'withdraw) 40 )
+Call the cops!"Incorrect password"
+
+
+
+Ques3
+
+(define (square x) (* x x ))
+    (define (make-monitored f)
+  (let ((called 0))
+    (define (inc-call)
+      (set! called (+ 1 called)))
+    (define (reset-count)
+      (set! called 0))
+    (lambda (message)
+      (cond ((eq? message 'how-many-calls?) called)
+	    ((eq? message 'reset-count) (reset-count))
+	    (else (begin
+		    (inc-call)
+		    (f message)))))))
+
+(define s (make-monitored square))
+(s 100)
+(s 'how-many-calls?)
+(s 'reset-count)
+(s 'how-many-calls?)
