@@ -1,0 +1,89 @@
+-- ==================================================
+-- Q1
+-- | import Data.Char
+import Data.Char
+
+type Text = [Char]
+type Wordd = [Char]
+
+
+sort [] = []
+sort [x] = [x]
+sort xs = merge (sort ys) (sort zs)
+ where (ys,zs) = half xs
+half xs = (take n xs, drop n xs)
+ where n = length xs `div` 2
+merge [] ys = ys
+merge xs [] = xs
+merge (x:xs) (y:ys) 
+ | x <= y = x : merge xs (y:ys)
+ | otherwise = y : merge (x:xs) ys
+
+sortWords :: [Wordd] -> [Wordd]
+sortWords = sort
+sortRuns :: [(Int,Wordd)] -> [(Int,Wordd)]
+sortRuns = reverse . sort
+
+showRun :: (Int,Wordd) -> String
+showRun (n,w) = w ++ ": " ++
+ show n ++ "\n"
+ 
+spann :: (a -> Bool) -> [a] -> ([a], [a])
+spann p [] = ([], [])
+spann p (x:xs) = if p x then (x:ys,zs)
+ else ([],x:xs)
+ where (ys,zs) = spann p xs
+
+countRuns :: [Wordd] -> [(Int,Wordd)]
+countRuns [] = []
+countRuns (w:ws) = (1+length us,w) : countRuns vs
+ where (us,vs) = spann ( == w) ws
+
+
+commonWords :: Int -> Text -> String
+commonWords n = concat . map showRun . take n . sortRuns . countRuns . sortWords . map (map Data.Char.toLower) . words
+-- ==========================================
+-- Q2
+
+
+myTake _ [] = []
+myTake 0 _ = []
+myTake n (x:xs) = x:rest
+  where rest = myTake (n - 1) xs   
+
+
+drop' :: Int -> [a] -> [a]
+drop' _ [] = []
+drop' n xs@(_:xs')
+   | n > 0     = drop' (n-1) xs'
+   | otherwise = xs
+
+
+
+-- |main = do 
+ -- |  let y = [1..10]   
+   -- |print (myTake 5 y)  
+   -- |let x = [1..10]   
+   -- |print (drop' 3 x)   
+
+-- =============================================
+-- Q3
+data List a = Nil | Snoc (List a) a deriving (Show)
+scar :: List a -> a
+scar Nil = error "Empty"
+scar (Snoc Nil x) = x
+scar (Snoc l x) = scar l
+
+
+scdr :: List a -> List a
+scdr Nil = error "Empty"
+scdr (Snoc Nil x) = Nil
+scdr (Snoc l x) = Snoc (scdr l) x 
+
+toList :: [a] -> List a
+toList [] = Nil
+toList l = Snoc (toList (init l)) (last l)
+
+fromList :: List a -> [a]
+fromList Nil = []
+fromList l = ((scar l) : fromList (scdr l))

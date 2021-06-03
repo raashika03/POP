@@ -1,0 +1,102 @@
+Question 1:
+
+#lang sicp
+(define (memo-proc proc)
+  (let ((already-run? false) (result false))
+    (lambda ()
+      (if (not already-run?)
+          (begin (set! result (proc))
+                 (set! already-run? true)
+                 result)
+          result))))
+
+(define-syntax delay
+  (syntax-rules ()
+    ((delay exp) (memo-proc (lambda () exp)))))
+
+(define (fib n)
+  (cond ((= n 0) 0)
+        ((= n 1) 1)
+        (else (+ (fib (- n 1))
+                 (fib (- n 2))))))
+
+
+(define memo-fib
+  (letrec([memo nil]
+          [f (lambda (x)
+               (let ([ans (assoc x memo)])
+                 (if ans
+                     (cdr ans)
+                     (let ([new-ans
+                            (if (or (= x 1) (= x 2))
+                                1
+                                (+ (f (- x 1))
+                                   (f (- x 2))))])
+                       (begin
+                         (set! memo (cons (cons x new-ans) memo))
+                         new-ans)))))])
+    f))
+
+
+
+Question 2:
+
+#lang sicp
+(define (stream-car s)
+  (car s))
+
+(define (stream-cdr s)
+  (force (cdr s)))
+
+(define (stream-map proc stream)
+  (if (stream-null? stream)
+      the-empty-stream
+      (cons-stream (proc (stream-car stream))
+                   (stream-map proc (stream-cdr stream)))))
+
+(define (partial-sums stream)
+  (let ((first (stream-car stream)))
+    (cons-stream
+      first
+      (stream-map (lambda (x) (+ x first)) (partial-sums (stream-cdr stream))))))
+
+(define (integers-starting-from n)
+  (cons-stream n (integers-starting-from (+ n 1))))
+
+(define integers (integers-starting-from 1))
+
+
+(stream-car (partial-sums integers))
+(stream-car (stream-cdr (partial-sums integers)))
+
+
+Question 3:
+
+#lang sicp
+(define (divides? m n)
+  (if (eq? (modulo n m) 0)
+      #t
+      #f))
+
+(define (mark-true n)
+  (cons n #t))
+
+(define (mark-divisors n ns)
+  (cond ((null? ns) '())
+        ((and (unmarked? (car ns)) 
+              (divides? n (car ns))) 
+           (cons (cons (car ns) #f) (mark-divisors n (cdr ns))))
+        (else (cons (car ns) (mark-divisors n (cdr ns))))))
+
+(define (unmarked? n)
+  (not (pair? n)))
+
+(define (sieve x)
+  (cond ((null? x) '())
+        ((unmarked? (car x)) 
+           (cons (mark-true (car x)) 
+                 (sieve (mark-divisors (car x) (cdr x)))))
+        (else (cons (car x) (sieve (cdr x))))))
+
+(define l (list 2 3 4 5 6 7))
+(sieve l)
